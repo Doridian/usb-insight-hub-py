@@ -21,7 +21,7 @@ class USBInfoParams:
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
-    params: dict[Literal["CH1","CH2", "CH3"], USBInfoParams]
+    params: dict[Literal["CH1", "CH2", "CH3"], USBInfoParams]
 
     def to_json(self) -> str:
         params_dict = {ch: param.__dict__ for ch, param in self.params.items()}
