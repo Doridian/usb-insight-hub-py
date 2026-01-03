@@ -10,11 +10,11 @@ from usb_insight_hub_host.screens import ALL_SCREEN_CONSTRUCTORS
 def main():
     parser = ArgumentParser(description="USB Insight Hub Host Application")
     _ = parser.add_argument(
-        "--port",
+        "--port", "-p",
         required=True,
         help="Serial port to connect to the USB Insight Hub (e.g., /dev/ttyUSB0)",
     )
-    _ = parser.add_argument("--cycle-time-seconds", type=int, default=5, help="Screen cycle time in seconds (default: 5)")
+    _ = parser.add_argument("--cycle-time-seconds", "-t", type=int, default=5, help="Screen cycle time in seconds (default: 5)")
     args = parser.parse_args()
 
     renderer = USBRenderer(
