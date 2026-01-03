@@ -7,8 +7,6 @@ from os.path import basename, exists, join as path_join
 from usb_insight_hub_host.usbutil import get_container_id, USB_VERSION_TYPE
 from usb_insight_hub_host.devinfo import DEV_ROOT
 
-PortIdxType = Literal[1, 2, 3]
-
 @dataclass(frozen=True, eq=True, kw_only=True)
 class RequestPacket:
     action: str
@@ -39,7 +37,7 @@ class USBInfoParams:
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
-    params: dict[PortIdxType, USBInfoParams]
+    params: dict[int, USBInfoParams | None]
 
     def to_serializable(self) -> Any:
         params_dict = {f"CH{ch}": param.to_serializable() for ch, param in self.params.items() if param is not None}
@@ -66,6 +64,7 @@ class USBHubError(Exception):
 class USBInsightHub:
     usb2_dev: str
     usb3_dev: str
+    num_ports: int
 
     def __init__(self, port: str):
         # Search for the correct hub for the given serial port
@@ -106,6 +105,7 @@ class USBInsightHub:
             raise ValueError(f"Could not find USB3 device for port {port}, USB2 device found: {usb2_dev}")
         self.usb3_dev = usb3_dev
 
+        self.num_ports = 3
         self.ser = Serial(port, baudrate=115200, timeout=1, dsrdtr=True)
 
     def close(self):

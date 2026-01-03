@@ -1,4 +1,4 @@
-from usb_insight_hub_host.hub import USBInsightHub, PortIdxType
+from usb_insight_hub_host.hub import USBInsightHub
 from functools import cached_property
 from usb_insight_hub_host.devinfo import DevInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
@@ -18,11 +18,11 @@ class USBInfo(DevInfo):
 
 class USBInsightHubPort:
     hub: USBInsightHub
-    idx: PortIdxType
+    idx: int
     usb2_dev: str
     usb3_dev: str
 
-    def __init__(self, hub: USBInsightHub, idx: PortIdxType):
+    def __init__(self, hub: USBInsightHub, idx: int):
         self.hub = hub
         self.idx = idx
         self.usb2_dev = f"{hub.usb2_dev}.{idx}"
