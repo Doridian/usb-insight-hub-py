@@ -6,12 +6,10 @@ DEV_ROOT = "/sys/bus/usb/devices"
 
 class DevInfo:
     devpath: str
-    version: Literal['2', '3']
 
-    def __init__(self, devpath: str, version: Literal['2', '3']):
+    def __init__(self, devpath: str):
         super().__init__()
         self.devpath = path.join(DEV_ROOT, devpath)
-        self.version = version
 
     @overload
     def read_str_subfile(self, file: str, *, default: str) -> str: ...

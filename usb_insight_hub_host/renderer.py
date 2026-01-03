@@ -43,10 +43,10 @@ class USBRenderer:
         _ = self.hub.send_request(usb_info_request)
 
     def _render_port(self, port: USBInsightHubPort) -> USBInfoParamsType | None:
-        info = port.get_info()
-        if info is None:
+        infos = port.get_infos()
+        if not infos:
             return EMPTY_PORT_INFO
-
+    
         current_priority = None
         valid_screens: list[Screen] = []
         for screen in self.screens:
@@ -54,7 +54,7 @@ class USBRenderer:
             if current_priority is not None and screen.priority != current_priority:
                 break
 
-            if not screen.valid_for(info):
+            if not screen.valid_for(infos):
                 continue
 
             current_priority = screen.priority
@@ -65,7 +65,7 @@ class USBRenderer:
 
         screen = valid_screens[self.screen_offset % len(valid_screens)]
 
-        result = screen.display(info)
+        result = screen.display(infos)
         if result is None:
             print(f"WARNING: None render for port {port.idx} by {screen.ID}!")
         return result

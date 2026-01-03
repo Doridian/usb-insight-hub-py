@@ -4,7 +4,7 @@ from usb_insight_hub_host.devinfo import DevInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
 class USBInfo(DevInfo):
-    port: "USBInsightHubPort"
+    port_index: int
 
     @cached_property
     def vid(self) -> int:
@@ -17,38 +17,35 @@ class USBInfo(DevInfo):
     @cached_property
     def speed(self) -> int:
         return self.read_int_subfile("speed", default=0)
+    
+    def version(self) -> USB_VERSION_TYPE:
+        return "3" if self.speed >= 5000 else "2"
 
 class USBInsightHubPort:
     hub: USBInsightHub
     idx: int
-    usb2_dev: str
-    usb3_dev: str
+    subdevs: list[str]
 
     def __init__(self, hub: USBInsightHub, idx: int):
         self.hub = hub
         self.idx = idx
-        self.usb2_dev = f"{hub.usb2_dev}.{idx}"
-        self.usb3_dev = f"{hub.usb3_dev}.{idx}"
+        self.subdevs = [f"{dev}.{idx}" for dev in hub.subdevs]
 
-    def _get_info_generic(self, dev: str, version: USB_VERSION_TYPE) -> USBInfo | None:
+    def _get_info_generic(self, dev: str) -> USBInfo | None:
         if not dev:
             return None
-        info = USBInfo(dev, version=version)
+        info = USBInfo(dev)
         if info.vid and info.pid:
-            info.port = self
+            info.port_index = self.idx
             return info
         return None
-    
-    def get_info_usb2(self) -> USBInfo | None:
-        return self._get_info_generic(self.usb2_dev, version="2")
-    
-    def get_info_usb3(self) -> USBInfo | None:
-        return self._get_info_generic(self.usb3_dev, version="3")
 
-    def get_info(self) -> USBInfo | None:
-        info = self.get_info_usb3()
-        if info is not None:
-            return info
-        
-        return self.get_info_usb2()
+    def get_infos(self) -> list[USBInfo]:
+        infos: list[USBInfo] = []
 
+        for subdev in self.subdevs:
+            info = self._get_info_generic(subdev)
+            if info is not None:
+                infos.append(info)
+
+        return infos

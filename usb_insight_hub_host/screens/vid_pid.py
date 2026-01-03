@@ -1,16 +1,35 @@
-from usb_insight_hub_host.screen import Screen
+from usb_insight_hub_host.screen import SimpleScreen
 from usb_insight_hub_host.hub import USBInfoParamsType, USBInfoParams
 from usb_insight_hub_host.port import USBInfo, USBInsightHubPort
+from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
-class VIDPIDScreen(Screen):
+class VIDPIDScreen(SimpleScreen):
     ID = "vid_pid"
+    VID_PREFIX = "V"
+    PID_PREFIX = "P"
+    DEFAULT_PRIORITY = 1
 
-    def __init__(self) -> None:
-        super().__init__(priority=1)
-
-    def display(self, info: USBInfo) -> USBInfoParamsType | None:
+    def display_single(self, info: USBInfo, max_version: USB_VERSION_TYPE) -> USBInfoParamsType | None:
         return USBInfoParams(
-            dev_name_1=f"V {info.vid:04x}",
-            dev_name_2=f"P {info.pid:04x}",
-            usb_type=info.version,
+            dev_name_1=f"{self.VID_PREFIX} {info.vid:04x}",
+            dev_name_2=f"{self.PID_PREFIX} {info.pid:04x}",
+            usb_type=max_version,
         )
+
+class VIDPID3Screen(VIDPIDScreen):
+    ID = "vid_pid_3"
+    USB_VERSION: USB_VERSION_TYPE = "3"
+    VID_PREFIX = "V3"
+    PID_PREFIX = "P3"
+    DEFAULT_PRIORITY = 2
+
+    def select_usb_info(self, infos: list[USBInfo]) -> USBInfo | None:
+        return self.usb_info_by_version(infos, self.USB_VERSION)
+
+class VIDPID2Screen(VIDPID3Screen):
+    ID = "vid_pid_2"
+    USB_VERSION = "2"
+    USB_VERSION = "2"
+    VID_PREFIX = "V2"
+    PID_PREFIX = "P2"
+    DEFAULT_PRIORITY = 2
