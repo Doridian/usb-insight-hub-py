@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 import json
 
-_port_str_type = Literal["CH1", "CH2", "CH3"]
+PortStrType = Literal["CH1", "CH2", "CH3"]
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class RequestPacket:
@@ -30,7 +30,7 @@ class USBInfoParams:
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
-    params: dict[_port_str_type, USBInfoParams]
+    params: dict[PortStrType, USBInfoParams]
 
     def to_serializable(self) -> Any:
         params_dict = {ch: param.to_serializable() for ch, param in self.params.items()}
@@ -61,6 +61,9 @@ class USBInsightHub:
     def close(self):
         self.ser.close()
 
+    def get_port(self, port: PortStrType) -> 'USBInsightHubPort':
+        return USBInsightHubPort(self, port)
+
     def send_request(self, request: RequestPacket) -> ResponsePacket:
         self.ser.write(json.dumps(request.to_serializable()).encode('utf-8') + b'\n')
         line = self.ser.readline().decode('utf-8').rstrip()
@@ -75,8 +78,8 @@ class USBInsightHub:
 
 class USBInsightHubPort:
     hub: USBInsightHub
-    port: _port_str_type
+    port: PortStrType
 
-    def __init__(self, hub: USBInsightHub, port: _port_str_type):
+    def __init__(self, hub: USBInsightHub, port: PortStrType):
         self.hub = hub
         self.port = port

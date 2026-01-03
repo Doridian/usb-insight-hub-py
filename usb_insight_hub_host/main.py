@@ -1,7 +1,10 @@
 from argparse import ArgumentParser
 from time import sleep
+from typing import cast
 
-from usb_insight_hub_host.hub import USBInsightHub, USBInfoRequest, USBInfoParams
+from usb_insight_hub_host.hub import USBInsightHub, USBInfoRequest, PortStrType
+from usb_insight_hub_host.renderer import USBPortRenderer
+from usb_insight_hub_host.renderer import USBPortRenderer
 
 def main():
     parser = ArgumentParser(description="USB Insight Hub Host Application")
@@ -9,17 +12,18 @@ def main():
     args = parser.parse_args()
     
     hub = USBInsightHub(args.port)
-    try:
+
+    renderers: dict[PortStrType, USBPortRenderer] = {
+        ch: USBPortRenderer(hub.get_port(ch)) for ch in cast(list[PortStrType], ["CH1", "CH2", "CH3"])
+    }
+
+    while True:
         usb_info_request = USBInfoRequest(
-            params={
-                "CH1": USBInfoParams(dev_name_1="DeviceA", dev_name_2="DeviceB", usb_type="3"),
-                "CH2": USBInfoParams(dev_name_1="DeviceC", dev_name_2="", usb_type="2")
-            }
+            params={ch: renderer.render() for ch, renderer in renderers.items()}
         )
         response = hub.send_request(usb_info_request)
         print("Response:", response)
-    finally:
-        hub.close()
+        sleep(1)  # Wait for 1 second before sending the next request
 
 if __name__ == "__main__":
     main()
