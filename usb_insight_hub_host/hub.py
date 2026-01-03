@@ -2,6 +2,9 @@ from serial import Serial
 from dataclasses import dataclass
 from typing import Any, Literal
 import json
+from os import readlink, listdir
+from os.path import basename, exists, join as path_join
+from usb_insight_hub_host.usbutil import DEV_ROOT, get_container_id
 
 PortStrType = Literal["CH1", "CH2", "CH3"]
 
@@ -55,7 +58,48 @@ class USBHubError(Exception):
         self.response_packet = response_packet
 
 class USBInsightHub:
+    usb2_dev: str
+    usb3_dev: str
+
     def __init__(self, port: str):
+        # Search for the correct hub for the given serial port
+        port_real = basename(readlink(port))
+        usb2_dev = None
+        for usb_dev in listdir(DEV_ROOT):
+            if usb_dev.startswith("usb"):
+                continue
+            if not usb_dev.endswith(".4:1.0"):
+                continue
+            if not exists(path_join(DEV_ROOT, usb_dev, "tty", port_real)):
+                continue
+
+            usb2_dev = usb_dev.removesuffix(".4:1.0")
+            break
+
+        if usb2_dev is None:
+            raise ValueError(f"Could not find USB2 device for port {port}")
+        self.usb2_dev = usb2_dev
+
+        # Search for the corresponding USB3 device
+        usb3_dev = None
+        usb2_container_id = get_container_id(usb2_dev)
+        if not usb2_container_id:
+            raise ValueError(f"USB2 device {usb2_dev} has no container ID")
+        for usb_dev in listdir(DEV_ROOT):
+            if usb_dev.startswith("usb"):
+                continue
+            if not exists(path_join(DEV_ROOT, usb_dev, "bos_descriptors")):
+                continue
+            usb3_container_id = get_container_id(usb_dev)
+            if usb3_container_id == usb2_container_id and usb_dev != usb2_dev:
+                if usb3_dev is not None:
+                    raise ValueError(f"Multiple USB3 devices found for port {port} with container ID {usb2_container_id}, USB2 device: {usb2_dev}, USB3 candidates: {usb3_dev}, {usb_dev}")
+                usb3_dev = usb_dev
+
+        if usb3_dev is None:
+            raise ValueError(f"Could not find USB3 device for port {port}, USB2 device found: {usb2_dev}")
+        self.usb3_dev = usb3_dev
+
         self.ser = Serial(port, baudrate=115200, timeout=1, dsrdtr=True)
 
     def close(self):
