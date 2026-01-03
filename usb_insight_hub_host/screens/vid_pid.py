@@ -3,8 +3,10 @@ from usb_insight_hub_host.hub import USBInfoParams
 from usb_insight_hub_host.port import USBInfo, USBInsightHubPort
 
 class VIDPIDScreen(Screen):
+    ID = "vid_pid"
+
     def __init__(self) -> None:
-        super().__init__(name="VID/PID Screen", priority=1)
+        super().__init__(priority=1)
 
     def display(self, info: USBInfo, port: USBInsightHubPort) -> USBInfoParams | None:
         return USBInfoParams(

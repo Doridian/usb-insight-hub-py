@@ -68,5 +68,5 @@ class USBRenderer:
 
         result = screen.display(info, port)
         if result is None:
-            print(f"WARNING: None render for port {port.idx} by {screen}!")
+            print(f"WARNING: None render for port {port.idx} by {screen.ID}!")
         return result
