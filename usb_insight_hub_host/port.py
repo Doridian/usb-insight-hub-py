@@ -1,6 +1,7 @@
-from usb_insight_hub_host.hub import USBInsightHub, PortStrType
+from usb_insight_hub_host.hub import USBInsightHub, PortIdxType
 from functools import cached_property
 from usb_insight_hub_host.devinfo import DevInfo
+from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
 class USBInfo(DevInfo):
     @cached_property
@@ -17,26 +18,33 @@ class USBInfo(DevInfo):
 
 class USBInsightHubPort:
     hub: USBInsightHub
-    port: PortStrType
-    subdevs: list[str]
+    idx: PortIdxType
+    usb2_dev: str
+    usb3_dev: str
 
-    # HOW TO FIND PORT (separate for USB2 and USB3!):
-    # Find device in /sys/bus/usb/devices with idVendor 303a and idProduct 100a
-    # Assume the serial device is at /sys/bus/usb/devices/9-1.1.4/ (will have /sys/bus/usb/devices/9-1.1.4/9-1.1.4:1.0/tty/ttyACM#)
-    # Hub is located at /sys/bus/usb/devices/9-1.1/
-    # Ports are located at /sys/bus/usb/devices/9-1.1.[123]/ respectively
-
-    # You can match hubs with bos_descriptors, deserialize as per BOS_DESCRITOR.md
-
-    def __init__(self, hub: USBInsightHub, port: PortStrType):
+    def __init__(self, hub: USBInsightHub, idx: PortIdxType):
         self.hub = hub
-        self.port = port
-        # TODO: Find self.subdevs
+        self.idx = idx
+        self.usb2_dev = f"{hub.usb2_dev}.{idx}"
+        self.usb3_dev = f"{hub.usb3_dev}.{idx}"
+
+    def _get_info_generic(self, dev: str, version: USB_VERSION_TYPE) -> USBInfo | None:
+        if not dev:
+            return None
+        info = USBInfo(dev, version=version)
+        if info.vid and info.pid:
+            return info
+        return None
+    
+    def get_info_usb2(self) -> USBInfo | None:
+        return self._get_info_generic(self.usb2_dev, version="2")
+    
+    def get_info_usb3(self) -> USBInfo | None:
+        return self._get_info_generic(self.usb3_dev, version="3")
 
     def get_info(self) -> USBInfo | None:
-        for subdev in self.subdevs:
-            info = USBInfo(subdev)
-            if info.vid and info.pid:
-                return info
-
-        return None
+        info = self.get_info_usb3()
+        if info is not None:
+            return info
+        
+        return self.get_info_usb2()

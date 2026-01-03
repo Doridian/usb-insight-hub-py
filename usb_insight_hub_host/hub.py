@@ -4,9 +4,10 @@ from typing import Any, Literal
 import json
 from os import readlink, listdir
 from os.path import basename, exists, join as path_join
-from usb_insight_hub_host.usbutil import DEV_ROOT, get_container_id
+from usb_insight_hub_host.usbutil import get_container_id, USB_VERSION_TYPE
+from usb_insight_hub_host.devinfo import DEV_ROOT
 
-PortStrType = Literal["CH1", "CH2", "CH3"]
+PortIdxType = Literal[1, 2, 3]
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class RequestPacket:
@@ -20,7 +21,7 @@ class RequestPacket:
 class USBInfoParams:
     dev_name_1: str
     dev_name_2: str
-    usb_type: Literal["2", "3"]
+    usb_type: USB_VERSION_TYPE
 
     def to_serializable(self) -> Any:
         return {
@@ -33,10 +34,10 @@ class USBInfoParams:
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
-    params: dict[PortStrType, USBInfoParams]
+    params: dict[PortIdxType, USBInfoParams]
 
     def to_serializable(self) -> Any:
-        params_dict = {ch: param.to_serializable() for ch, param in self.params.items()}
+        params_dict = {f"CH{ch}": param.to_serializable() for ch, param in self.params.items() if param is not None}
         return {
             "action": self.action,
             "params": params_dict

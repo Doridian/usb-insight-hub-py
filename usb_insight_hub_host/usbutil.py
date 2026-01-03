@@ -2,11 +2,13 @@ from dataclasses import dataclass
 from os.path import join as path_join
 from os import SEEK_CUR
 from io import BufferedReader
+from typing import Literal
+from usb_insight_hub_host.devinfo import DEV_ROOT
 
 HUB_VID = 0x303a
 HUB_PID = 0x1001
 CONTAINER_CAPABILITY_TYPE = 4
-DEV_ROOT = "/sys/bus/usb/devices"
+USB_VERSION_TYPE = Literal["2", "3"]
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class BOSCapability:

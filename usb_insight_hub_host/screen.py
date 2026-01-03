@@ -11,7 +11,7 @@ class Screen(ABC):
         self.priority = priority
 
     @abstractmethod
-    def display(self, port: USBInsightHubPort) -> USBInfoParams:
+    def display(self, port: USBInsightHubPort) -> USBInfoParams | None:
         pass
 
     @abstractmethod
