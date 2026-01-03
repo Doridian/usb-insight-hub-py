@@ -1,4 +1,9 @@
-from usb_insight_hub_host.hub import USBInfoParams, USBInfoParamsType, USBInfoRequest, USBInsightHub
+from usb_insight_hub_host.hub import (
+    USBInfoParams,
+    USBInfoParamsType,
+    USBInfoRequest,
+    USBInsightHub,
+)
 from usb_insight_hub_host.port import USBInsightHubPort
 from usb_insight_hub_host.screens.base import Screen
 
@@ -11,6 +16,7 @@ EMPTY_PORT_INFO = USBInfoParams(
 )
 
 PORT_CYCLE_TIME = timedelta(seconds=1)
+
 
 class USBRenderer:
     screens: list[Screen]
@@ -46,7 +52,7 @@ class USBRenderer:
         infos = port.get_infos()
         if not infos:
             return EMPTY_PORT_INFO
-    
+
         current_priority = None
         valid_screens: list[Screen] = []
         for screen in self.screens:

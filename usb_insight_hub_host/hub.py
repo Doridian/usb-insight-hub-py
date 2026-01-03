@@ -7,6 +7,7 @@ from os.path import basename, exists, join as path_join
 from usb_insight_hub_host.usbutil import get_container_id, USB_VERSION_TYPE
 from usb_insight_hub_host.devinfo import DEV_ROOT
 
+
 @dataclass(frozen=True, eq=True, kw_only=True)
 class RequestPacket:
     action: str
@@ -14,6 +15,7 @@ class RequestPacket:
 
     def to_serializable(self) -> Any:
         return self.__dict__
+
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoParams:
@@ -34,11 +36,14 @@ class USBInfoParams:
             "usbType": self.usb_type,
         }
 
+
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoParamsAdvText:
     txt: str
     align: Literal["center", "left", "right"]
-    color: Literal["WHITE", "YELLOW", "ORANGE", "BLACK", "RED", "DARKGREY", "CYAN", "BLUE", "GREEN"]
+    color: Literal[
+        "WHITE", "YELLOW", "ORANGE", "BLACK", "RED", "DARKGREY", "CYAN", "BLUE", "GREEN"
+    ]
 
     def to_serializable(self) -> Any:
         res: dict[str, Any] = {
@@ -49,6 +54,7 @@ class USBInfoParamsAdvText:
         if self.color != "WHITE":
             res["color"] = self.color
         return res
+
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoParamsAdv:
@@ -66,12 +72,16 @@ class USBInfoParamsAdv:
             raise ValueError("USBInfoParamsAdv can have at most 3 lines")
 
         return {
-            "Dev1_name": {f"T{i+1}": line.to_serializable() for i, line in enumerate(self.lines)},
+            "Dev1_name": {
+                f"T{i + 1}": line.to_serializable() for i, line in enumerate(self.lines)
+            },
             "numDev": "10",
             "usbType": self.usb_type,
         }
 
+
 USBInfoParamsType = USBInfoParams | USBInfoParamsAdv
+
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
@@ -79,26 +89,29 @@ class USBInfoRequest(RequestPacket):
     params: dict[int, USBInfoParamsType | None]
 
     def to_serializable(self) -> Any:
-        params_dict = {f"CH{ch}": param.to_serializable() for ch, param in self.params.items() if param is not None}
-        return {
-            "action": self.action,
-            "params": params_dict
+        params_dict = {
+            f"CH{ch}": param.to_serializable()
+            for ch, param in self.params.items()
+            if param is not None
         }
+        return {"action": self.action, "params": params_dict}
+
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class ResponsePacket:
     status: str
     data: list[Any] | dict[Any, Any]
-        
+
 
 class USBHubError(Exception):
     raw: str
     response_packet: ResponsePacket
-    
+
     def __init__(self, raw: str, response_packet: ResponsePacket):
         super().__init__(f"Error response from USB Insight Hub: {raw}")
         self.raw = raw
         self.response_packet = response_packet
+
 
 class USBInsightHub:
     subdevs: list[str]
@@ -133,14 +146,21 @@ class USBInsightHub:
             if not exists(path_join(DEV_ROOT, usb_dev_new, "bos_descriptors")):
                 continue
             usb_dev_2_container_id = get_container_id(usb_dev_new)
-            if usb_dev_2_container_id == usb_dev_1_container_id and usb_dev_new != usb_dev_1:
+            if (
+                usb_dev_2_container_id == usb_dev_1_container_id
+                and usb_dev_new != usb_dev_1
+            ):
                 if usb_dev_2 is not None:
-                    raise ValueError(f"Multiple USB3 devices found for port {port} with container ID {usb_dev_1_container_id}, USB devices: {usb_dev_1}, {usb_dev_2}, {usb_dev_new}")
+                    raise ValueError(
+                        f"Multiple USB3 devices found for port {port} with container ID {usb_dev_1_container_id}, USB devices: {usb_dev_1}, {usb_dev_2}, {usb_dev_new}"
+                    )
                 usb_dev_2 = usb_dev_new
 
         if usb_dev_2 is None:
-            raise ValueError(f"Could not find USB3 device for port {port}, USB2 device found: {usb_dev_1}")
-        
+            raise ValueError(
+                f"Could not find USB3 device for port {port}, USB2 device found: {usb_dev_1}"
+            )
+
         self.subdevs = [usb_dev_1, usb_dev_2]
 
         self.num_ports = 3
@@ -150,8 +170,8 @@ class USBInsightHub:
         self.ser.close()
 
     def send_request(self, request: RequestPacket) -> ResponsePacket:
-        self.ser.write(json.dumps(request.to_serializable()).encode('utf-8') + b'\n')
-        line = self.ser.readline().decode('utf-8').rstrip()
+        self.ser.write(json.dumps(request.to_serializable()).encode("utf-8") + b"\n")
+        line = self.ser.readline().decode("utf-8").rstrip()
         if line:
             response_dict = json.loads(line)
             resp = ResponsePacket(**response_dict)

@@ -3,6 +3,7 @@ from functools import cached_property
 from usb_insight_hub_host.devinfo import DevInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
+
 class USBInfo(DevInfo):
     port_index: int
 
@@ -17,9 +18,10 @@ class USBInfo(DevInfo):
     @cached_property
     def speed(self) -> int:
         return self.read_int_subfile("speed", default=0)
-    
+
     def version(self) -> USB_VERSION_TYPE:
         return "3" if self.speed >= 5000 else "2"
+
 
 class USBInsightHubPort:
     hub: USBInsightHub

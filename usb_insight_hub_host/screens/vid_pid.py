@@ -3,18 +3,22 @@ from usb_insight_hub_host.hub import USBInfoParamsType, USBInfoParams
 from usb_insight_hub_host.port import USBInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
+
 class VIDPIDScreen(SimpleScreen):
     ID = "vid_pid"
     VID_PREFIX = "V"
     PID_PREFIX = "P"
     DEFAULT_PRIORITY = 1
 
-    def display_single(self, info: USBInfo, max_version: USB_VERSION_TYPE) -> USBInfoParamsType | None:
+    def display_single(
+        self, info: USBInfo, max_version: USB_VERSION_TYPE
+    ) -> USBInfoParamsType | None:
         return USBInfoParams(
             dev_name_1=f"{self.VID_PREFIX} {info.vid:04x}",
             dev_name_2=f"{self.PID_PREFIX} {info.pid:04x}",
             usb_type=max_version,
         )
+
 
 class VIDPID3Screen(VIDPIDScreen):
     ID = "vid_pid_3"
@@ -31,6 +35,7 @@ class VIDPID3Screen(VIDPIDScreen):
             return False
         selected = self.select_usb_info(info)
         return selected is not None
+
 
 class VIDPID2Screen(VIDPID3Screen):
     ID = "vid_pid_2"

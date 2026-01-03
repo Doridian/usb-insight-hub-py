@@ -5,15 +5,17 @@ from io import BufferedReader
 from typing import Literal
 from usb_insight_hub_host.devinfo import DEV_ROOT
 
-HUB_VID = 0x303a
+HUB_VID = 0x303A
 HUB_PID = 0x1001
 CONTAINER_CAPABILITY_TYPE = 4
 USB_VERSION_TYPE = Literal["2", "3"]
+
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class BOSCapability:
     capability_type: int
     data: bytes
+
 
 class LimitedReader:
     io: BufferedReader
@@ -38,10 +40,10 @@ class LimitedReader:
 
         self.cur_pos += size
         return data
-    
+
     def one(self) -> int:
         return self.read(1)[0]
-    
+
     def skip(self, size: int):
         if size <= 0:
             return
@@ -52,11 +54,13 @@ class LimitedReader:
         self.io.seek(size, SEEK_CUR)
         self.cur_pos += size
 
+
 def get_container_id(dev: str) -> str | None:
     caps = decode_bos_capabilities(dev)
     if CONTAINER_CAPABILITY_TYPE not in caps:
         return None
     return caps[CONTAINER_CAPABILITY_TYPE].hex()
+
 
 def decode_bos_capabilities(dev: str) -> dict[int, bytes]:
     capabilities: dict[int, bytes] = {}
@@ -66,11 +70,11 @@ def decode_bos_capabilities(dev: str) -> dict[int, bytes]:
         desc_len = rdr.one()
         if desc_len < 5:
             raise ValueError(f"BOS root descriptor too short {desc_len} < 5")
-        
+
         desc_type = rdr.one()
-        if desc_type != 0x0f:
+        if desc_type != 0x0F:
             raise ValueError(f"Invalid BOS root descriptor type: {desc_type}")
-        
+
         rdr.total_len = int.from_bytes(rdr.read(2), "little")
 
         total_caps = rdr.one()
@@ -85,7 +89,9 @@ def decode_bos_capabilities(dev: str) -> dict[int, bytes]:
 
             cap_desc_type = rdr.one()
             if cap_desc_type != 0x10:
-                raise ValueError(f"Invalid BOS capability descriptor type: {cap_desc_type}")
+                raise ValueError(
+                    f"Invalid BOS capability descriptor type: {cap_desc_type}"
+                )
             cap_type = rdr.one()
             cap_data = rdr.read(cap_len - 3)
 

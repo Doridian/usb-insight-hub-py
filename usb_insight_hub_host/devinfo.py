@@ -4,6 +4,7 @@ from typing import overload
 
 DEV_ROOT = "/sys/bus/usb/devices"
 
+
 class DevInfo:
     devpath: str
 
@@ -40,9 +41,13 @@ class DevInfo:
     @overload
     def read_int_subfile(self, file: str, *, base: int = 10, default: int) -> int: ...
     @overload
-    def read_int_subfile(self, file: str, *, base: int = 10, default: None = None) -> int | None: ...
+    def read_int_subfile(
+        self, file: str, *, base: int = 10, default: None = None
+    ) -> int | None: ...
 
-    def read_int_subfile(self, file: str, *, base: int = 10, default: int | None = None) -> int | None:
+    def read_int_subfile(
+        self, file: str, *, base: int = 10, default: int | None = None
+    ) -> int | None:
         value = self.read_str_subfile(file)
         if value is None or value == "":
             return default

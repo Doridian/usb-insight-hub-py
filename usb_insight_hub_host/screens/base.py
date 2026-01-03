@@ -3,6 +3,7 @@ from usb_insight_hub_host.hub import USBInfoParamsType
 from usb_insight_hub_host.port import USBInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
+
 class Screen(ABC):
     priority: int
     ID: str
@@ -17,6 +18,7 @@ class Screen(ABC):
 
     def valid_for(self, info: list[USBInfo]) -> bool:
         return True
+
 
 class SimpleScreen(Screen):
     # If we have two, prefer the one with the higher speed
@@ -34,7 +36,9 @@ class SimpleScreen(Screen):
     def select_usb_info(self, infos: list[USBInfo]) -> USBInfo | None:
         return self._select_usb_info_best_speed(infos)
 
-    def usb_info_by_version(self, infos: list[USBInfo], version: USB_VERSION_TYPE) -> USBInfo | None:
+    def usb_info_by_version(
+        self, infos: list[USBInfo], version: USB_VERSION_TYPE
+    ) -> USBInfo | None:
         for info in infos:
             if info.version() == version:
                 return info
@@ -54,7 +58,9 @@ class SimpleScreen(Screen):
         return self.valid_for_single(selected)
 
     @abstractmethod
-    def display_single(self, info: USBInfo, max_version: USB_VERSION_TYPE) -> USBInfoParamsType | None:
+    def display_single(
+        self, info: USBInfo, max_version: USB_VERSION_TYPE
+    ) -> USBInfoParamsType | None:
         pass
 
     def valid_for_single(self, info: USBInfo) -> bool:
