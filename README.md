@@ -6,6 +6,8 @@ The [USB insight hub](https://github.com/Aeriosolutions/USB-Insight-HUB-Hardware
 
 However, as it is open source and has a [documented protocol](https://github.com/Aeriosolutions/USB-Insight-HUB/blob/main/UIH%20Serial%20API%20v1_0.pdf), this aims to implement a Linux host.
 
+![usbtool](https://github.com/user-attachments/assets/7275101c-6c15-4cae-bf52-855fe69a9580)
+
 ## Features
 
 - [ ] Multiple "screens" (different information layouts)
