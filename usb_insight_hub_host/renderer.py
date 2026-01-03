@@ -1,6 +1,6 @@
 from usb_insight_hub_host.hub import USBInfoParams, USBInfoParamsType, USBInfoRequest, USBInsightHub
 from usb_insight_hub_host.port import USBInsightHubPort
-from usb_insight_hub_host.screen import Screen
+from usb_insight_hub_host.screens.base import Screen
 
 from datetime import datetime, timedelta
 

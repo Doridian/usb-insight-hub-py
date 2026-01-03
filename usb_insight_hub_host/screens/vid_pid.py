@@ -1,4 +1,4 @@
-from usb_insight_hub_host.screen import SimpleScreen
+from usb_insight_hub_host.screens.base import SimpleScreen
 from usb_insight_hub_host.hub import USBInfoParamsType, USBInfoParams
 from usb_insight_hub_host.port import USBInfo, USBInsightHubPort
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
@@ -25,6 +25,12 @@ class VIDPID3Screen(VIDPIDScreen):
 
     def select_usb_info(self, infos: list[USBInfo]) -> USBInfo | None:
         return self.usb_info_by_version(infos, self.USB_VERSION)
+
+    def valid_for(self, info: list[USBInfo]) -> bool:
+        if len(info) < 2:
+            return False
+        selected = self.select_usb_info(info)
+        return selected is not None
 
 class VIDPID2Screen(VIDPID3Screen):
     ID = "vid_pid_2"

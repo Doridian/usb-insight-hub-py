@@ -3,7 +3,7 @@ from time import sleep
 
 from usb_insight_hub_host.hub import USBInsightHub
 from usb_insight_hub_host.renderer import USBRenderer
-from usb_insight_hub_host.screen import Screen
+from usb_insight_hub_host.screens.base import Screen
 from usb_insight_hub_host.screens import ALL_SCREEN_CONSTRUCTORS
 
 def main():
