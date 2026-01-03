@@ -4,7 +4,7 @@ from time import sleep
 from usb_insight_hub_host.hub import USBInsightHub
 from usb_insight_hub_host.renderer import USBRenderer
 from usb_insight_hub_host.screen import Screen
-from usb_insight_hub_host.screens.vid_pid import VIDPIDScreen
+from usb_insight_hub_host.screens import ALL_SCREEN_CONSTRUCTORS
 
 def main():
     parser = ArgumentParser(description="USB Insight Hub Host Application")
@@ -12,7 +12,7 @@ def main():
     args = parser.parse_args()
     
     hub = USBInsightHub(args.port)
-    screens: list[Screen] = [VIDPIDScreen()]
+    screens: list[Screen] = [screen() for screen in ALL_SCREEN_CONSTRUCTORS]
     renderer = USBRenderer(hub, screens)
 
     while True:
