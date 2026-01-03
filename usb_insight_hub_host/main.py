@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 from time import sleep
+from datetime import timedelta
 
 from usb_insight_hub_host.hub import USBInsightHub
 from usb_insight_hub_host.renderer import USBRenderer
-from usb_insight_hub_host.screens.base import Screen
 from usb_insight_hub_host.screens import ALL_SCREEN_CONSTRUCTORS
 
 
@@ -14,12 +14,14 @@ def main():
         required=True,
         help="Serial port to connect to the USB Insight Hub (e.g., /dev/ttyUSB0)",
     )
+    _ = parser.add_argument("--cycle-time-seconds", type=int, default=5, help="Screen cycle time in seconds")
     args = parser.parse_args()
 
-    hub = USBInsightHub(args.port)
-    screens: list[Screen] = [screen() for screen in ALL_SCREEN_CONSTRUCTORS]
-    renderer = USBRenderer(hub, screens)
-
+    renderer = USBRenderer(
+        hub=USBInsightHub(args.port),
+        screens=[screen() for screen in ALL_SCREEN_CONSTRUCTORS],
+        cycle_time=timedelta(seconds=args.cycle_time_seconds),
+    )
     while True:
         renderer.render()
         sleep(1)

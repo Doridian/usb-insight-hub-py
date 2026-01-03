@@ -20,17 +20,19 @@ PORT_CYCLE_TIME = timedelta(seconds=1)
 
 class USBRenderer:
     screens: list[Screen]
-    screen_offset: int
-    screen_last_cycle: datetime
+    cycle_index: int
+    last_cycle: datetime
     hub: USBInsightHub
+    cycle_time: timedelta
     ports: list[USBInsightHubPort]
 
-    def __init__(self, hub: USBInsightHub, screens: list[Screen]):
+    def __init__(self, hub: USBInsightHub, screens: list[Screen], cycle_time: timedelta = PORT_CYCLE_TIME):
         super().__init__()
         self.screens = sorted(screens, key=lambda s: s.priority, reverse=True)
         self.hub = hub
-        self.screen_offset = 0
-        self.screen_last_cycle = datetime.now()
+        self.cycle_index = 0
+        self.cycle_time = cycle_time
+        self.last_cycle = datetime.now()
 
         ports: list[USBInsightHubPort] = []
         for port_idx in range(1, self.hub.num_ports + 1):
@@ -38,11 +40,11 @@ class USBRenderer:
         self.ports = ports
 
     def next_cycle(self) -> None:
-        self.screen_offset += 1
-        self.screen_last_cycle = datetime.now()
+        self.cycle_index += 1
+        self.last_cycle = datetime.now()
 
     def render(self) -> None:
-        if datetime.now() - self.screen_last_cycle >= PORT_CYCLE_TIME:
+        if datetime.now() - self.last_cycle >= self.cycle_time:
             self.next_cycle()
         usb_info_request = USBInfoRequest(
             params={port.idx: self._render_port(port) for port in self.ports}
@@ -70,7 +72,7 @@ class USBRenderer:
         if not valid_screens:
             return EMPTY_PORT_INFO
 
-        screen = valid_screens[self.screen_offset % len(valid_screens)]
+        screen = valid_screens[self.cycle_index % len(valid_screens)]
 
         result = screen.display(infos)
         if result is None:
