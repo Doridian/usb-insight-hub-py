@@ -12,8 +12,8 @@ def main():
     try:
         usb_info_request = USBInfoRequest(
             params={
-                "CH1": USBInfoParams(Dev1_name="DeviceA", Dev2_name="DeviceB", numDev="2", usbType="3"),
-                "CH2": USBInfoParams(Dev1_name="DeviceC", Dev2_name="DeviceD", numDev="1", usbType="2")
+                "CH1": USBInfoParams(dev_name_1="DeviceA", dev_name_2="DeviceB", usb_type="3"),
+                "CH2": USBInfoParams(dev_name_1="DeviceC", dev_name_2="", usb_type="2")
             }
         )
         response = hub.send_request(usb_info_request)
