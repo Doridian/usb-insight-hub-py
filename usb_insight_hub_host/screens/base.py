@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from usb_insight_hub_host.hub import USBInfoParamsType
-from usb_insight_hub_host.port import USBInfo, USBInsightHubPort
+from usb_insight_hub_host.port import USBInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
 class Screen(ABC):

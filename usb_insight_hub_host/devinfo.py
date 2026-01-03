@@ -1,6 +1,6 @@
 from os import path
 from glob import glob
-from typing import overload, Literal
+from typing import overload
 
 DEV_ROOT = "/sys/bus/usb/devices"
 
