@@ -19,14 +19,14 @@ class USBInfo(DevInfo):
 class USBInsightHubPort:
     hub: USBInsightHub
     idx: PortIdxType
-    _usb2_dev: str
-    _usb3_dev: str
+    usb2_dev: str
+    usb3_dev: str
 
     def __init__(self, hub: USBInsightHub, idx: PortIdxType):
         self.hub = hub
         self.idx = idx
-        self._usb2_dev = f"{hub.usb2_dev}.{idx}"
-        self._usb3_dev = f"{hub.usb3_dev}.{idx}"
+        self.usb2_dev = f"{hub.usb2_dev}.{idx}"
+        self.usb3_dev = f"{hub.usb3_dev}.{idx}"
 
     def _get_info_generic(self, dev: str, version: USB_VERSION_TYPE) -> USBInfo | None:
         if not dev:
@@ -37,10 +37,10 @@ class USBInsightHubPort:
         return None
     
     def get_info_usb2(self) -> USBInfo | None:
-        return self._get_info_generic(self._usb2_dev, version="2")
+        return self._get_info_generic(self.usb2_dev, version="2")
     
     def get_info_usb3(self) -> USBInfo | None:
-        return self._get_info_generic(self._usb3_dev, version="3")
+        return self._get_info_generic(self.usb3_dev, version="3")
 
     def get_info(self) -> USBInfo | None:
         info = self.get_info_usb3()
