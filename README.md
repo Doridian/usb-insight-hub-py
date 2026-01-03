@@ -8,6 +8,21 @@ However, as it is open source and has a [documented protocol](https://github.com
 
 ![usbtool](https://github.com/user-attachments/assets/7275101c-6c15-4cae-bf52-855fe69a9580)
 
+## Usage
+
+```sh
+$ uv run usb-insight-hub-host --help
+usage: usb-insight-hub-host [-h] --port PORT [--cycle-time-seconds CYCLE_TIME_SECONDS]
+
+USB Insight Hub Host Application
+
+options:
+  -h, --help            show this help message and exit
+  --port PORT           Serial port to connect to the USB Insight Hub (e.g., /dev/ttyUSB0)
+  --cycle-time-seconds CYCLE_TIME_SECONDS
+                        Screen cycle time in seconds
+```
+
 ## Features
 
 - [ ] Multiple "screens" (different information layouts)
