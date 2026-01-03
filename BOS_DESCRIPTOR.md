@@ -1,11 +1,13 @@
 # BOS descriptor decoding thoughtstream
 
 ## Example bos_descriptors
+
 00000000: 050f 2a00 0307 1002 0200 0000 0a10 0300  ..*.............
 00000010: 0e00 010a 0a00 1410 0400 0000 0000 0000  ................
 00000020: 0000 0000 0000 0000 0000                 ..........
 
 ## Manual decode
+
 bLength = 5
 bDescriptorType = 0x0f
 wTotalLength = 0x2a00
