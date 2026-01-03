@@ -18,7 +18,7 @@ class RequestPacket:
 
 
 @dataclass(frozen=True, eq=True, kw_only=True)
-class USBInfoParams:
+class USBPortInfo:
     dev_name_1: str
     dev_name_2: str
     usb_type: USB_VERSION_TYPE
@@ -57,7 +57,7 @@ class USBInfoParamsAdvText:
 
 
 @dataclass(frozen=True, eq=True, kw_only=True)
-class USBInfoParamsAdv:
+class USBPortInfoAdv:
     lines: list[USBInfoParamsAdvText]
     usb_type: USB_VERSION_TYPE
 
@@ -81,7 +81,7 @@ class USBInfoParamsAdv:
 
 
 @dataclass(frozen=True, eq=True, kw_only=True)
-class USBInfoParamsImage:
+class USBPortInfoImage:
     image: bytes
     usb_type: USB_VERSION_TYPE
 
@@ -97,12 +97,12 @@ class USBInfoParamsImage:
             "usbType": self.usb_type,
         }
 
-USBInfoParamsType = USBInfoParams | USBInfoParamsAdv | USBInfoParamsImage
+USBPortInfoType = USBPortInfo | USBPortInfoAdv | USBPortInfoImage
 
 @dataclass(frozen=True, eq=True, kw_only=True)
-class USBInfoRequest(RequestPacket):
+class USBSetPortInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
-    params: dict[int, USBInfoParamsType | None]
+    params: dict[int, USBPortInfoType | None]
 
     @override
     def to_serializable(self) -> Any:
@@ -112,6 +112,15 @@ class USBInfoRequest(RequestPacket):
             if param is not None
         }
         return {"action": self.action, "params": params_dict}
+
+@dataclass(frozen=True, eq=True, kw_only=True)
+class USBSetPortRequest(RequestPacket):
+    action: Literal["set"] = "set"
+    params: dict[str, Any]
+
+    @override
+    def to_serializable(self) -> Any:
+        return {"action": self.action, "params": self.params}
 
 
 @dataclass(frozen=True, eq=True, kw_only=True)
@@ -191,7 +200,7 @@ class USBInsightHub:
     def close(self):
         self.ser.close()
 
-    def send_image(self, index: int, img: USBInfoParamsImage) -> None:
+    def send_image(self, index: int, img: USBPortInfoImage) -> None:
         if len(img.image) != self.IMAGE_W * self.IMAGE_H * self.IMAGE_BPP:
             raise ValueError(
                 f"Image data must be exactly {self.IMAGE_W * self.IMAGE_H * self.IMAGE_BPP} bytes"

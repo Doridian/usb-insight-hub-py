@@ -1,8 +1,8 @@
 from usb_insight_hub_host.hub import (
-    USBInfoParams,
-    USBInfoParamsImage,
-    USBInfoParamsType,
-    USBInfoRequest,
+    USBPortInfo,
+    USBPortInfoImage,
+    USBPortInfoType,
+    USBSetPortInfoRequest,
     USBInsightHub,
 )
 from usb_insight_hub_host.port import USBInsightHubPort
@@ -10,7 +10,7 @@ from usb_insight_hub_host.screens.base import Screen
 
 from datetime import datetime, timedelta
 
-EMPTY_PORT_INFO = USBInfoParams(
+EMPTY_PORT_INFO = USBPortInfo(
     dev_name_1="",
     dev_name_2="",
     usb_type="2",
@@ -45,12 +45,12 @@ class USBRenderer:
     def render(self) -> None:
         if datetime.now() - self.last_cycle >= self.cycle_time:
             self.next_cycle()
-        usb_info_request = USBInfoRequest(
+        usb_info_request = USBSetPortInfoRequest(
             params={port.idx: self._render_port(port) for port in self.ports}
         )
         _ = self.hub.send_request(usb_info_request)
 
-    def _render_port(self, port: USBInsightHubPort) -> USBInfoParamsType | None:
+    def _render_port(self, port: USBInsightHubPort) -> USBPortInfoType | None:
         infos = port.get_infos()
         if not infos:
             return EMPTY_PORT_INFO
@@ -77,7 +77,7 @@ class USBRenderer:
         if result is None:
             print(f"WARNING: None render for port {port.idx} by {screen.ID}!")
 
-        if isinstance(result, USBInfoParamsImage):
+        if isinstance(result, USBPortInfoImage):
             self.hub.send_image(port.idx, result)
 
         return result

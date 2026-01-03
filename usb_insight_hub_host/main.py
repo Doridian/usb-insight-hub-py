@@ -17,8 +17,11 @@ def main():
     _ = parser.add_argument("--cycle-time-seconds", "-t", type=int, default=5, help="Screen cycle time in seconds (default: 5)")
     args = parser.parse_args()
 
+    hub = USBInsightHub(args.port)
+    # _ = hub.send_request(USBSetPortRequest(params={"wifi_enabled": "false"}))
+
     renderer = USBRenderer(
-        hub=USBInsightHub(args.port),
+        hub=hub,
         screens=[screen() for screen in ALL_SCREEN_CONSTRUCTORS],
         cycle_time=timedelta(seconds=args.cycle_time_seconds),
     )

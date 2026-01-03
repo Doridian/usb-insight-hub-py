@@ -1,6 +1,6 @@
 from typing import override
 from usb_insight_hub_host.screens.base import SimpleScreen
-from usb_insight_hub_host.hub import USBInfoParamsType, USBInfoParams
+from usb_insight_hub_host.hub import USBPortInfoType, USBPortInfo
 from usb_insight_hub_host.port import USBInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
@@ -14,8 +14,8 @@ class VIDPIDScreen(SimpleScreen):
     @override
     def display_single(
         self, info: USBInfo, max_version: USB_VERSION_TYPE
-    ) -> USBInfoParamsType | None:
-        return USBInfoParams(
+    ) -> USBPortInfoType | None:
+        return USBPortInfo(
             dev_name_1=f"{self.VID_PREFIX} {info.vid:04x}",
             dev_name_2=f"{self.PID_PREFIX} {info.pid:04x}",
             usb_type=max_version,
