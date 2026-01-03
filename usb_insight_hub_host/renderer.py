@@ -1,5 +1,6 @@
 from usb_insight_hub_host.hub import (
     USBInfoParams,
+    USBInfoParamsImage,
     USBInfoParamsType,
     USBInfoRequest,
     USBInsightHub,
@@ -75,4 +76,8 @@ class USBRenderer:
         result = screen.display(infos)
         if result is None:
             print(f"WARNING: None render for port {port.idx} by {screen.ID}!")
+
+        if isinstance(result, USBInfoParamsImage):
+            self.hub.send_image(port.idx, result)
+
         return result

@@ -22,8 +22,11 @@ def main():
         screens=[screen() for screen in ALL_SCREEN_CONSTRUCTORS],
         cycle_time=timedelta(seconds=args.cycle_time_seconds),
     )
+
     while True:
+        print("<render>")
         renderer.render()
+        print("</render>")
         sleep(1)
 
 

@@ -80,8 +80,24 @@ class USBInfoParamsAdv:
         }
 
 
-USBInfoParamsType = USBInfoParams | USBInfoParamsAdv
+@dataclass(frozen=True, eq=True, kw_only=True)
+class USBInfoParamsImage:
+    image: bytes
+    usb_type: USB_VERSION_TYPE
 
+    def to_serializable(self) -> Any:
+        if not self.image:
+            return {
+                "numDev": "0",
+                "usbType": "",
+            }
+
+        return {
+            "numDev": "11",
+            "usbType": self.usb_type,
+        }
+
+USBInfoParamsType = USBInfoParams | USBInfoParamsAdv | USBInfoParamsImage
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
@@ -117,6 +133,10 @@ class USBHubError(Exception):
 class USBInsightHub:
     subdevs: list[str]
     num_ports: int
+
+    IMAGE_W = 226
+    IMAGE_H = 90
+    IMAGE_BPP = 1
 
     def __init__(self, port: str):
         super().__init__()
@@ -170,6 +190,16 @@ class USBInsightHub:
 
     def close(self):
         self.ser.close()
+
+    def send_image(self, index: int, img: USBInfoParamsImage) -> None:
+        if len(img.image) != self.IMAGE_W * self.IMAGE_H * self.IMAGE_BPP:
+            raise ValueError(
+                f"Image data must be exactly {self.IMAGE_W * self.IMAGE_H * self.IMAGE_BPP} bytes"
+            )
+        _ = self.ser.write(bytes([index]) + img.image)
+        recv = self.ser.readline().decode("utf-8").rstrip()
+        if str(index) != recv:
+            raise ValueError(f"Invalid response received from USB Insight Hub after sending image: {recv}")
 
     def send_request(self, request: RequestPacket) -> ResponsePacket:
         _ = self.ser.write(json.dumps(request.to_serializable()).encode("utf-8") + b"\n")
