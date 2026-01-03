@@ -16,8 +16,9 @@ class ImageScreen(SimpleScreen):
         data = b""
         for _ in range(90):
             for col in range(226):
-                data += col.to_bytes(1, "little")
+                data += col.to_bytes(2, "little")
         return USBPortInfoImage(
             image=data, # Rainbows
+            bpp=16,
             usb_type=max_version,
         )

@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from time import sleep
 from datetime import timedelta
 
-from usb_insight_hub_host.hub import USBInsightHub
+from usb_insight_hub_host.hub import USBInsightHub, USBSetPortRequest
 from usb_insight_hub_host.renderer import USBRenderer
 from usb_insight_hub_host.screens import ALL_SCREEN_CONSTRUCTORS
 
@@ -18,7 +18,7 @@ def main():
     args = parser.parse_args()
 
     hub = USBInsightHub(args.port)
-    # _ = hub.send_request(USBSetPortRequest(params={"wifi_enabled": "false"}))
+    _ = hub.send_request(USBSetPortRequest(params={"wifi_enabled": "false"}))
 
     renderer = USBRenderer(
         hub=hub,

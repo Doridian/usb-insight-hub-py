@@ -83,6 +83,7 @@ class USBPortInfoAdv:
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBPortInfoImage:
     image: bytes
+    bpp: int = 8
     usb_type: USB_VERSION_TYPE
 
     def to_serializable(self) -> Any:
@@ -145,7 +146,6 @@ class USBInsightHub:
 
     IMAGE_W = 226
     IMAGE_H = 90
-    IMAGE_BPP = 1
 
     def __init__(self, port: str):
         super().__init__()
@@ -201,11 +201,12 @@ class USBInsightHub:
         self.ser.close()
 
     def send_image(self, index: int, img: USBPortInfoImage) -> None:
-        if len(img.image) != self.IMAGE_W * self.IMAGE_H * self.IMAGE_BPP:
+        bytes_per_pixel = img.bpp // 8
+        if len(img.image) != self.IMAGE_W * self.IMAGE_H * bytes_per_pixel:
             raise ValueError(
-                f"Image data must be exactly {self.IMAGE_W * self.IMAGE_H * self.IMAGE_BPP} bytes"
+                f"Image data must be exactly {self.IMAGE_W * self.IMAGE_H * bytes_per_pixel} bytes"
             )
-        _ = self.ser.write(bytes([index]) + img.image)
+        _ = self.ser.write(bytes([index, img.bpp]) + img.image)
         recv = self.ser.readline().decode("utf-8").rstrip()
         if str(index) != recv:
             raise ValueError(f"Invalid response received from USB Insight Hub after sending image: {recv}")
