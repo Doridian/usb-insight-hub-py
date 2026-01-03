@@ -1,4 +1,5 @@
-from usb_insight_hub_host.hub import USBInsightHubPort, USBInfoParams
+from usb_insight_hub_host.hub import USBInfoParams
+from usb_insight_hub_host.port import USBInsightHubPort
 
 from usb_insight_hub_host.screens.vid_pid import VIDPIDScreen
 

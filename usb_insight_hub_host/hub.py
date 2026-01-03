@@ -61,9 +61,6 @@ class USBInsightHub:
     def close(self):
         self.ser.close()
 
-    def get_port(self, port: PortStrType) -> 'USBInsightHubPort':
-        return USBInsightHubPort(self, port)
-
     def send_request(self, request: RequestPacket) -> ResponsePacket:
         self.ser.write(json.dumps(request.to_serializable()).encode('utf-8') + b'\n')
         line = self.ser.readline().decode('utf-8').rstrip()
@@ -75,11 +72,3 @@ class USBInsightHub:
             return resp
         else:
             raise TimeoutError("No response received from USB Insight Hub")
-
-class USBInsightHubPort:
-    hub: USBInsightHub
-    port: PortStrType
-
-    def __init__(self, hub: USBInsightHub, port: PortStrType):
-        self.hub = hub
-        self.port = port

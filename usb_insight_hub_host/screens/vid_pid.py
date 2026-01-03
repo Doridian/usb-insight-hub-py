@@ -1,5 +1,6 @@
 from usb_insight_hub_host.screen import Screen
-from usb_insight_hub_host.hub import USBInsightHubPort, USBInfoParams
+from usb_insight_hub_host.hub import USBInfoParams
+from usb_insight_hub_host.port import USBInsightHubPort
 
 class VIDPIDScreen(Screen):
     def __init__(self) -> None:

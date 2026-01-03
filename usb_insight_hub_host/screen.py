@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from usb_insight_hub_host.hub import USBInsightHubPort, USBInfoParams
+from usb_insight_hub_host.hub import USBInfoParams
+from usb_insight_hub_host.port import USBInsightHubPort
 
 class Screen(ABC):
     priority: int
