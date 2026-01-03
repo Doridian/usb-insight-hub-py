@@ -201,10 +201,10 @@ class USBInsightHub:
         self.ser.close()
 
     def send_image(self, index: int, img: USBPortInfoImage) -> None:
-        bytes_per_pixel = img.bpp // 8
-        if len(img.image) != self.IMAGE_W * self.IMAGE_H * bytes_per_pixel:
+        image_size = (self.IMAGE_W * self.IMAGE_H * img.bpp) // 8
+        if len(img.image) != image_size:
             raise ValueError(
-                f"Image data must be exactly {self.IMAGE_W * self.IMAGE_H * bytes_per_pixel} bytes"
+                f"Image data must be exactly {image_size} bytes"
             )
         _ = self.ser.write(bytes([index, img.bpp]) + img.image)
         recv = self.ser.readline().decode("utf-8").rstrip()
