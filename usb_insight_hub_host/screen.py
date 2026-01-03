@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from usb_insight_hub_host.hub import USBInfoParams
-from usb_insight_hub_host.port import USBInsightHubPort
+from usb_insight_hub_host.port import USBInfo, USBInsightHubPort
 
 class Screen(ABC):
     priority: int
@@ -11,9 +11,8 @@ class Screen(ABC):
         self.priority = priority
 
     @abstractmethod
-    def display(self, port: USBInsightHubPort) -> USBInfoParams | None:
+    def display(self, info: USBInfo, port: USBInsightHubPort) -> USBInfoParams | None:
         pass
 
-    @abstractmethod
-    def valid_for(self, port: USBInsightHubPort) -> bool:
-        pass
+    def valid_for(self, info: USBInfo, port: USBInsightHubPort) -> bool:
+        return True

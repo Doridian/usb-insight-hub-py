@@ -24,6 +24,11 @@ class USBInfoParams:
     usb_type: USB_VERSION_TYPE
 
     def to_serializable(self) -> Any:
+        if self.dev_name_1 == "" and self.dev_name_2 == "":
+            return {
+                "numDev": "0",
+                "usbType": ""
+            }
         return {
             "Dev1_name": self.dev_name_1,
             "Dev2_name": self.dev_name_2,
