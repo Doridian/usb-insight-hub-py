@@ -54,7 +54,7 @@ class USBRenderer:
             if current_priority is not None and screen.priority != current_priority:
                 break
 
-            if not screen.valid_for(info, port):
+            if not screen.valid_for(info):
                 continue
 
             current_priority = screen.priority
@@ -65,7 +65,7 @@ class USBRenderer:
 
         screen = valid_screens[self.screen_offset % len(valid_screens)]
 
-        result = screen.display(info, port)
+        result = screen.display(info)
         if result is None:
             print(f"WARNING: None render for port {port.idx} by {screen.ID}!")
         return result

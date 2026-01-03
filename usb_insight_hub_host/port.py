@@ -4,6 +4,8 @@ from usb_insight_hub_host.devinfo import DevInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 
 class USBInfo(DevInfo):
+    port: "USBInsightHubPort"
+
     @cached_property
     def vid(self) -> int:
         return self.read_int_subfile("idVendor", base=16, default=0)
@@ -33,6 +35,7 @@ class USBInsightHubPort:
             return None
         info = USBInfo(dev, version=version)
         if info.vid and info.pid:
+            info.port = self
             return info
         return None
     
@@ -48,3 +51,4 @@ class USBInsightHubPort:
             return info
         
         return self.get_info_usb2()
+

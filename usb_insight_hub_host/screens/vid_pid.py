@@ -8,7 +8,7 @@ class VIDPIDScreen(Screen):
     def __init__(self) -> None:
         super().__init__(priority=1)
 
-    def display(self, info: USBInfo, port: USBInsightHubPort) -> USBInfoParamsType | None:
+    def display(self, info: USBInfo) -> USBInfoParamsType | None:
         return USBInfoParams(
             dev_name_1=f"V {info.vid:04x}",
             dev_name_2=f"P {info.pid:04x}",

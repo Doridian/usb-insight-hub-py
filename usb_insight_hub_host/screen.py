@@ -10,8 +10,8 @@ class Screen(ABC):
         self.priority = priority
 
     @abstractmethod
-    def display(self, info: USBInfo, port: USBInsightHubPort) -> USBInfoParamsType | None:
+    def display(self, info: USBInfo) -> USBInfoParamsType | None:
         pass
 
-    def valid_for(self, info: USBInfo, port: USBInsightHubPort) -> bool:
+    def valid_for(self, info: USBInfo) -> bool:
         return True

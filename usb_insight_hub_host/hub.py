@@ -80,7 +80,6 @@ class USBInfoRequest(RequestPacket):
 
     def to_serializable(self) -> Any:
         params_dict = {f"CH{ch}": param.to_serializable() for ch, param in self.params.items() if param is not None}
-        print(params_dict)
         return {
             "action": self.action,
             "params": params_dict
