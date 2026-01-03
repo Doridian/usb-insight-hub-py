@@ -20,7 +20,7 @@ options:
   -h, --help            show this help message and exit
   --port PORT           Serial port to connect to the USB Insight Hub (e.g., /dev/ttyUSB0)
   --cycle-time-seconds CYCLE_TIME_SECONDS
-                        Screen cycle time in seconds
+                        Screen cycle time in seconds (default: 5)
 ```
 
 ## Features
