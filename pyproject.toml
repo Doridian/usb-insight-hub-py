@@ -16,6 +16,12 @@ venv = ".venv"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "pyright>=1.1.407",
+    "ruff>=0.14.10",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["usb_insight_hub_host"]
 

@@ -1,3 +1,4 @@
+from typing import override
 from usb_insight_hub_host.screens.base import SimpleScreen
 from usb_insight_hub_host.hub import USBInfoParamsType, USBInfoParams
 from usb_insight_hub_host.port import USBInfo
@@ -10,6 +11,7 @@ class VIDPIDScreen(SimpleScreen):
     PID_PREFIX = "P"
     DEFAULT_PRIORITY = 1
 
+    @override
     def display_single(
         self, info: USBInfo, max_version: USB_VERSION_TYPE
     ) -> USBInfoParamsType | None:
@@ -27,9 +29,11 @@ class VIDPID3Screen(VIDPIDScreen):
     PID_PREFIX = "P3"
     DEFAULT_PRIORITY = 2
 
+    @override
     def select_usb_info(self, infos: list[USBInfo]) -> USBInfo | None:
         return self.usb_info_by_version(infos, self.USB_VERSION)
 
+    @override
     def valid_for(self, info: list[USBInfo]) -> bool:
         if len(info) < 2:
             return False
@@ -39,7 +43,6 @@ class VIDPID3Screen(VIDPIDScreen):
 
 class VIDPID2Screen(VIDPID3Screen):
     ID = "vid_pid_2"
-    USB_VERSION = "2"
     USB_VERSION = "2"
     VID_PREFIX = "V2"
     PID_PREFIX = "P2"

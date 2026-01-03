@@ -9,7 +9,7 @@ from usb_insight_hub_host.screens import ALL_SCREEN_CONSTRUCTORS
 
 def main():
     parser = ArgumentParser(description="USB Insight Hub Host Application")
-    parser.add_argument(
+    _ = parser.add_argument(
         "--port",
         required=True,
         help="Serial port to connect to the USB Insight Hub (e.g., /dev/ttyUSB0)",

@@ -1,6 +1,6 @@
 from serial import Serial
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, override
 import json
 from os import readlink, listdir
 from os.path import basename, exists, join as path_join
@@ -88,6 +88,7 @@ class USBInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
     params: dict[int, USBInfoParamsType | None]
 
+    @override
     def to_serializable(self) -> Any:
         params_dict = {
             f"CH{ch}": param.to_serializable()
@@ -118,6 +119,7 @@ class USBInsightHub:
     num_ports: int
 
     def __init__(self, port: str):
+        super().__init__()
         # Search for the correct hub for the given serial port
         port_real = basename(readlink(port))
         usb_dev_1 = None
@@ -170,7 +172,7 @@ class USBInsightHub:
         self.ser.close()
 
     def send_request(self, request: RequestPacket) -> ResponsePacket:
-        self.ser.write(json.dumps(request.to_serializable()).encode("utf-8") + b"\n")
+        _ = self.ser.write(json.dumps(request.to_serializable()).encode("utf-8") + b"\n")
         line = self.ser.readline().decode("utf-8").rstrip()
         if line:
             response_dict = json.loads(line)

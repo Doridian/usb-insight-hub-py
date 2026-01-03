@@ -7,6 +7,10 @@ from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
 class USBInfo(DevInfo):
     port_index: int
 
+    def __init__(self, port_index: int, devpath: str):
+        super().__init__(devpath)
+        self.port_index = port_index
+
     @cached_property
     def vid(self) -> int:
         return self.read_int_subfile("idVendor", base=16, default=0)
@@ -29,6 +33,7 @@ class USBInsightHubPort:
     subdevs: list[str]
 
     def __init__(self, hub: USBInsightHub, idx: int):
+        super().__init__()
         self.hub = hub
         self.idx = idx
         self.subdevs = [f"{dev}.{idx}" for dev in hub.subdevs]
@@ -36,7 +41,7 @@ class USBInsightHubPort:
     def _get_info_generic(self, dev: str) -> USBInfo | None:
         if not dev:
             return None
-        info = USBInfo(dev)
+        info = USBInfo(port_index=self.idx, devpath=dev)
         if info.vid and info.pid:
             info.port_index = self.idx
             return info

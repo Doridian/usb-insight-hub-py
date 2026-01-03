@@ -26,6 +26,7 @@ class USBRenderer:
     ports: list[USBInsightHubPort]
 
     def __init__(self, hub: USBInsightHub, screens: list[Screen]):
+        super().__init__()
         self.screens = sorted(screens, key=lambda s: s.priority, reverse=True)
         self.hub = hub
         self.screen_offset = 0
@@ -40,7 +41,7 @@ class USBRenderer:
         self.screen_offset += 1
         self.screen_last_cycle = datetime.now()
 
-    def render(self) -> USBInfoParamsType | None:
+    def render(self) -> None:
         if datetime.now() - self.screen_last_cycle >= PORT_CYCLE_TIME:
             self.next_cycle()
         usb_info_request = USBInfoRequest(

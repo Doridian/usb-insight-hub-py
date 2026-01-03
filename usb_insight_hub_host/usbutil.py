@@ -23,6 +23,7 @@ class LimitedReader:
     total_len: int
 
     def __init__(self, io: BufferedReader):
+        super().__init__()
         self.io = io
         self.cur_pos = 0
         self.total_len = -1
@@ -44,14 +45,14 @@ class LimitedReader:
     def one(self) -> int:
         return self.read(1)[0]
 
-    def skip(self, size: int):
+    def skip(self, size: int) -> None:
         if size <= 0:
             return
 
         if self.total_len > -1 and size > self.total_len - self.cur_pos:
             raise EOFError("End of LimitedReader reached")
 
-        self.io.seek(size, SEEK_CUR)
+        _ = self.io.seek(size, SEEK_CUR)
         self.cur_pos += size
 
 

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import override
 from usb_insight_hub_host.hub import USBInfoParamsType
 from usb_insight_hub_host.port import USBInfo
 from usb_insight_hub_host.usbutil import USB_VERSION_TYPE
@@ -10,6 +11,7 @@ class Screen(ABC):
     DEFAULT_PRIORITY: int = 0
 
     def __init__(self, priority: int | None = None) -> None:
+        super().__init__()
         self.priority = self.DEFAULT_PRIORITY if priority is None else priority
 
     @abstractmethod
@@ -44,6 +46,7 @@ class SimpleScreen(Screen):
                 return info
         return None
 
+    @override
     def display(self, info: list[USBInfo]) -> USBInfoParamsType | None:
         best_speed = self._select_usb_info_best_speed(info)
         selected = self.select_usb_info(info)
@@ -51,6 +54,7 @@ class SimpleScreen(Screen):
             return None
         return self.display_single(selected, best_speed.version())
 
+    @override
     def valid_for(self, info: list[USBInfo]) -> bool:
         selected = self.select_usb_info(info)
         if selected is None:
