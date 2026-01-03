@@ -200,25 +200,26 @@ class USBInsightHub:
     def close(self):
         self.ser.close()
 
-    def send_image(self, index: int, img: USBPortInfoImage) -> None:
+    def _read_response(self) -> ResponsePacket:
+        line = self.ser.readline().decode("utf-8").rstrip()
+        if not line:
+            raise TimeoutError("No response received from USB Insight Hub")
+
+        response_dict = json.loads(line)
+        resp = ResponsePacket(**response_dict)
+        if resp.status != "ok":
+            raise USBHubError(line, resp)
+        return resp
+
+    def send_image(self, index: int, img: USBPortInfoImage) -> ResponsePacket:
         image_size = (self.IMAGE_W * self.IMAGE_H * img.bpp) // 8
         if len(img.image) != image_size:
             raise ValueError(
                 f"Image data must be exactly {image_size} bytes"
             )
         _ = self.ser.write(bytes([index, img.bpp]) + img.image)
-        recv = self.ser.readline().decode("utf-8").rstrip()
-        if str(index) != recv:
-            raise ValueError(f"Invalid response received from USB Insight Hub after sending image: {recv}")
+        return self._read_response()
 
     def send_request(self, request: RequestPacket) -> ResponsePacket:
         _ = self.ser.write(json.dumps(request.to_serializable()).encode("utf-8") + b"\n")
-        line = self.ser.readline().decode("utf-8").rstrip()
-        if line:
-            response_dict = json.loads(line)
-            resp = ResponsePacket(**response_dict)
-            if resp.status != "ok":
-                raise USBHubError(line, resp)
-            return resp
-        else:
-            raise TimeoutError("No response received from USB Insight Hub")
+        return self._read_response()
