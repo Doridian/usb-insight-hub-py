@@ -1,3 +1,4 @@
+from math import ceil
 from serial import Serial
 from dataclasses import dataclass
 from typing import Any, Literal, override
@@ -212,7 +213,7 @@ class USBInsightHub:
         return resp
 
     def send_image(self, index: int, img: USBPortInfoImage) -> ResponsePacket:
-        image_size = (self.IMAGE_W * self.IMAGE_H * img.bpp) // 8
+        image_size = ceil((self.IMAGE_W * self.IMAGE_H * img.bpp) / 8)
         if len(img.image) != image_size:
             raise ValueError(
                 f"Image data must be exactly {image_size} bytes"
