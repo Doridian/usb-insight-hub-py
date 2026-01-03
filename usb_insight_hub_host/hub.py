@@ -25,22 +25,62 @@ class USBInfoParams:
         if self.dev_name_1 == "" and self.dev_name_2 == "":
             return {
                 "numDev": "0",
-                "usbType": ""
+                "usbType": "",
             }
         return {
             "Dev1_name": self.dev_name_1,
             "Dev2_name": self.dev_name_2,
             "numDev": "1" if self.dev_name_2 == "" else "2",
-            "usbType": self.usb_type
+            "usbType": self.usb_type,
         }
+
+@dataclass(frozen=True, eq=True, kw_only=True)
+class USBInfoParamsAdvText:
+    txt: str
+    align: Literal["center", "left", "right"]
+    color: Literal["WHITE", "YELLOW", "ORANGE", "BLACK", "RED", "DARKGREY", "CYAN", "BLUE", "GREEN"]
+
+    def to_serializable(self) -> Any:
+        res: dict[str, Any] = {
+            "txt": self.txt,
+        }
+        if self.align != "center":
+            res["align"] = self.align
+        if self.color != "WHITE":
+            res["color"] = self.color
+        return res
+
+@dataclass(frozen=True, eq=True, kw_only=True)
+class USBInfoParamsAdv:
+    lines: list[USBInfoParamsAdvText]
+    usb_type: USB_VERSION_TYPE
+
+    def to_serializable(self) -> Any:
+        if not self.lines:
+            return {
+                "numDev": "0",
+                "usbType": "",
+            }
+
+        if len(self.lines) > 3:
+            raise ValueError("USBInfoParamsAdv can have at most 3 lines")
+
+        return {
+            "Dev1_name": {f"T{i+1}": line.to_serializable() for i, line in enumerate(self.lines)},
+            "numDev": "10",
+            "usbType": self.usb_type,
+        }
+
+USBInfoParamsType = USBInfoParams | USBInfoParamsAdv
 
 @dataclass(frozen=True, eq=True, kw_only=True)
 class USBInfoRequest(RequestPacket):
     action: Literal["set"] = "set"
-    params: dict[int, USBInfoParams | None]
+    params: dict[int, USBInfoParamsType | None]
 
     def to_serializable(self) -> Any:
         params_dict = {f"CH{ch}": param.to_serializable() for ch, param in self.params.items() if param is not None}
+        print(params_dict)
         return {
             "action": self.action,
             "params": params_dict

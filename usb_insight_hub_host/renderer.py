@@ -1,9 +1,8 @@
-from usb_insight_hub_host.hub import USBInfoParams, USBInfoRequest, USBInsightHub
+from usb_insight_hub_host.hub import USBInfoParams, USBInfoParamsType, USBInfoRequest, USBInsightHub
 from usb_insight_hub_host.port import USBInsightHubPort
 from usb_insight_hub_host.screen import Screen
 
 from datetime import datetime, timedelta
-from typing import cast
 
 EMPTY_PORT_INFO = USBInfoParams(
     dev_name_1="",
@@ -35,7 +34,7 @@ class USBRenderer:
         self.screen_offset += 1
         self.screen_last_cycle = datetime.now()
 
-    def render(self) -> USBInfoParams | None:
+    def render(self) -> USBInfoParamsType | None:
         if datetime.now() - self.screen_last_cycle >= PORT_CYCLE_TIME:
             self.next_cycle()
         usb_info_request = USBInfoRequest(
@@ -43,7 +42,7 @@ class USBRenderer:
         )
         _ = self.hub.send_request(usb_info_request)
 
-    def _render_port(self, port: USBInsightHubPort) -> USBInfoParams | None:
+    def _render_port(self, port: USBInsightHubPort) -> USBInfoParamsType | None:
         info = port.get_info()
         if info is None:
             return EMPTY_PORT_INFO
