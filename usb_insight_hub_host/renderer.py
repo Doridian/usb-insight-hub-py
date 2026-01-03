@@ -15,8 +15,6 @@ EMPTY_PORT_INFO = USBInfoParams(
     usb_type="2",
 )
 
-PORT_CYCLE_TIME = timedelta(seconds=1)
-
 
 class USBRenderer:
     screens: list[Screen]
@@ -26,7 +24,7 @@ class USBRenderer:
     cycle_time: timedelta
     ports: list[USBInsightHubPort]
 
-    def __init__(self, hub: USBInsightHub, screens: list[Screen], cycle_time: timedelta = PORT_CYCLE_TIME):
+    def __init__(self, hub: USBInsightHub, screens: list[Screen], cycle_time: timedelta):
         super().__init__()
         self.screens = sorted(screens, key=lambda s: s.priority, reverse=True)
         self.hub = hub
