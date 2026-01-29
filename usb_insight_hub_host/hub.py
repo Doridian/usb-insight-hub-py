@@ -151,7 +151,11 @@ class USBInsightHub:
     def __init__(self, port: str):
         super().__init__()
         # Search for the correct hub for the given serial port
-        port_real = basename(readlink(port))
+        try:
+            port_resolved = readlink(port)
+        except OSError:
+            port_resolved = port
+        port_real = basename(port_resolved)
         usb_dev_1 = None
         for usb_dev_new in listdir(DEV_ROOT):
             if usb_dev_new.startswith("usb"):
